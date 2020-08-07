@@ -1,0 +1,9 @@
+﻿@model int
+<div class="row">
+    <div class="col-6">
+        <input type="submit" asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@Model" value="Update" class="btn btn-info form-control" />
+    </div>
+    <div class="col-6">
+        <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="btn btn-success form-control">Back to List</a>
+    </div>
+</div>
