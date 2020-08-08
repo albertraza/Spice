@@ -1,0 +1,42 @@
+﻿@model IEnumerable<SubCategory>
+@{
+    ViewData["Title"] = "Sub Categories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<div class="border p-5 bg-white">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-info">Sub Category List</h2>
+        </div>
+        <div class="col-md-6 text-right">
+            <partial name="_CreateSubCategoryButton" />
+        </div>
+    </div>
+    @if(Model.Count() > 0)
+    {
+    <table class="table table-stripped">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Name)</th>
+            <th>@Html.DisplayNameFor(m => m.Category.Name)</th>
+            <th></th>
+        </tr>
+
+        @foreach(var subCategory in Model)
+        {
+            <tr>
+                <td>@subCategory.Name</td>
+                <td>@subCategory.Category.Name</td>
+                <td> EDIT | DETAILS | DELETE </td>
+            </tr>
+        }
+    </table>
+    } else
+    {
+        <div class="m-2">
+            <p>No sub categories are available.</p>
+        </div>
+    }
+</div>

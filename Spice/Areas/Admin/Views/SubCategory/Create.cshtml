@@ -1,0 +1,53 @@
+﻿@model Spice.Models.ViewModels.CategoryAndSubCategoryViewModel
+@{
+    ViewData["Title"] = "Create Sub Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-dark">Create Sub Category</h2>
+<br />
+
+<div class="border bg-white p-5 row">
+    <div class="col-8 border-right">
+        <form method="post" asp-action="Create" asp-controller="SubCategory" asp-area="Admin">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <select id="ddlCategoryList" asp-for="SubCategory.CategoryId" asp-items="@Model.Categories.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>
+                </div>
+                <span class="text-danger" asp-validation-for="SubCategory.CategoryId"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input type="text" asp-for="SubCategory.Name" class="form-control" />
+                </div>
+                <span class="text-danger" asp-validation-for="SubCategory.Name"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_CreateSCButtonAndBackToList" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-3 offset-1">
+        @if (Model.SubCategories.Count() > 0)
+        {
+            <p>Existing Subcategories: </p>
+
+            <div id="SubCategoryList">
+
+            </div>
+        } else
+        {
+
+        }
+    </div>
+</div>
