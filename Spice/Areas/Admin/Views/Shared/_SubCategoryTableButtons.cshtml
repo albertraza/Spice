@@ -1,7 +1,7 @@
 ﻿@model int 
 
     <td role="group" class="btn-group">
-        <a asp-area="Admin" asp-controller="SubCategory" asp-action="Edit" class="btn btn-primary text-white">
+        <a asp-area="Admin" asp-controller="SubCategory" asp-action="Edit" asp-route-id="@Model" class="btn btn-primary text-white">
             <i class="fas fa-edit"></i>
         </a>
         <a asp-area="Admin" asp-controller="SubCategory" asp-action="Details" class="btn btn-success text-white">

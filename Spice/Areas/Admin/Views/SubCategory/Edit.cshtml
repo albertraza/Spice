@@ -1,23 +1,25 @@
 ﻿@model Spice.Models.ViewModels.CategoryAndSubCategoryViewModel
 @{
-    ViewData["Title"] = "Create Sub Category";
+    ViewData["Title"] = "Edit Sub Category";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <br />
-<h2 class="text-dark">Create Sub Category</h2>
+<h2 class="text-dark">Edit Sub Category</h2>
 <br />
 <partial name="_StatusMessage" model="@Model.StatusMessage" />
 <div class="border bg-white p-5 row">
     <div class="col-8 border-right">
-        <form method="post" asp-action="Create" asp-controller="SubCategory" asp-area="Admin">
+        <form method="post" asp-action="Edit" asp-controller="SubCategory" asp-area="Admin">
             <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <input type="hidden" asp-for="SubCategory.Id" />
+            <input type="hidden" asp-for="SubCategory.CategoryId" />
             <div class="form-group row">
                 <div class="col-3">
                     <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-5">
-                    <select id="ddlCategoryList" asp-for="SubCategory.CategoryId" asp-items="@Model.Categories.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>
+                    <select id="ddlCategoryList" disabled asp-for="SubCategory.CategoryId" asp-items="@Model.Categories.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>
                 </div>
                 <span class="text-danger" asp-validation-for="SubCategory.CategoryId"></span>
             </div>
@@ -51,8 +53,8 @@
 
 
 @section Scripts {
-@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
 
     function updateSubCategoryList() {
         var categorySelected = document.getElementById("ddlCategoryList").value;
@@ -76,11 +78,7 @@
 
     $(document).ready(function () {
         updateSubCategoryList();
-
-        $("#ddlCategoryList").on("change", function () {
-            updateSubCategoryList();
-        });
     });
 
-</script>
+    </script>
 }

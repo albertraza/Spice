@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
 using Spice.Extentions;
@@ -15,6 +16,9 @@ namespace Spice.Areas.Admin.Controllers
     public class SubCategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
+
+        [TempData]
+        public string StatusMessage { get; set; }
 
         public SubCategoryController(ApplicationDbContext context)
         {
@@ -34,7 +38,7 @@ namespace Spice.Areas.Admin.Controllers
             {
                 Categories = await _context.Categories.ToListAsync(),
                 SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync(),
-                SubCategory = new Models.SubCategory()
+                SubCategory = new SubCategory()
             };
 
             return View(model);
@@ -45,36 +49,91 @@ namespace Spice.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryAndSubCategoryViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var NewModel = new CategoryAndSubCategoryViewModel()
+                var category = _context.SubCategories.Include(sc => sc.Category).Where(sc => sc.Name == model.SubCategory.Name && sc.Category.Id == model.SubCategory.CategoryId);
+
+                if (category.Count() > 0)
                 {
-                    Categories = await _context.Categories.ToListAsync(),
-                    SubCategory = model.SubCategory,
-                    SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync()
-                };
-                return View(NewModel);
+                    StatusMessage = $"Error: There's a register called {model.SubCategory.Name} in the Category selected, please select a diferent one.";
+                }
+                else
+                {
+                    _context.SubCategories.Add(model.SubCategory);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+
             }
 
-            var category = _context.SubCategories.Include(sc => sc.Category).Where(sc => sc.Name == model.SubCategory.Name && sc.Category.Id == model.SubCategory.CategoryId);
+            return View(new CategoryAndSubCategoryViewModel()
+            {
+                Categories = await _context.Categories.ToListAsync(),
+                SubCategory = model.SubCategory,
+                SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync(),
+                StatusMessage = StatusMessage
+            });
+        }
 
-            if (category.Count() > 0)
+        // GET SUBCATEGORIES
+        public async Task<IActionResult> GetSubCategories(int id)
+        {
+            var subCategories = await _context.SubCategories.Where(sc => sc.CategoryId == id).ToListAsync();
+            return Json(new SelectList(subCategories, "Id", "Name"));
+        }
+
+
+        // GET EDIT
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var subCategory = await _context.SubCategories.FindAsync(id);
+
+            if (subCategory == null)
+                return NotFound();
+
+            return View(new CategoryAndSubCategoryViewModel()
             {
-                var NewModel = new CategoryAndSubCategoryViewModel()
+                Categories = await _context.Categories.ToListAsync(),
+                SubCategory = subCategory,
+                SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync()
+            });
+        }
+
+        // POST EDIT
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CategoryAndSubCategoryViewModel model)
+        {
+            if (id != model.SubCategory.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var categories = _context.SubCategories.Include(sc => sc.Category).Where(sc => sc.Name == model.SubCategory.Name && sc.Category.Id == model.SubCategory.CategoryId);
+
+                if (categories.Count() > 0)
                 {
-                    Categories = await _context.Categories.ToListAsync(),
-                    SubCategory = model.SubCategory,
-                    SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync(),
-                    StatusMessage = "There's a sub category registered with the same name in the same category, use a different name"
-                };
-                return View(NewModel);
+                    StatusMessage = $"Error: There's a register called {model.SubCategory.Name} in the Category selected, please select a diferent one.";
+                }
+                else
+                {
+                    var subCategory = await _context.SubCategories.FindAsync(id);
+                    subCategory.Name = model.SubCategory.Name;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            else
+
+            return View(new CategoryAndSubCategoryViewModel()
             {
-                _context.SubCategories.Add(model.SubCategory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+                Categories = await _context.Categories.ToListAsync(),
+                SubCategories = await _context.SubCategories.OrderBy(sc => sc.Name).Select(sc => sc.Name).Distinct().ToListAsync(),
+                SubCategory = model.SubCategory,
+                StatusMessage = StatusMessage
+            });
         }
     }
 }
