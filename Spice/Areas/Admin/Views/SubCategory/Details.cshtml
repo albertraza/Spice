@@ -1,0 +1,41 @@
+﻿@model SubCategory
+@{
+    ViewData["Title"] = "Sub Category Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<br />
+<h2 class="text-dark">Sub Category Details</h2>
+<br />
+
+
+<div class="border bg-white p-5 row">
+    <div class="col-12">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CategoryId" />
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="Category.Name" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input type="text" asp-for="Name" readonly class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_SubCategoryEditAndBackToIndexButtons" model="@Model.Id" />
+                </div>
+            </div>
+    </div>
+
+</div>

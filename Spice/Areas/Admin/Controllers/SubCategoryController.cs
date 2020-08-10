@@ -145,6 +145,8 @@ namespace Spice.Areas.Admin.Controllers
             var subCategory = await _context.SubCategories.FindAsync(id);
             if (subCategory == null)
                 return NotFound();
+            var category = await _context.Categories.FindAsync(subCategory.CategoryId);
+            subCategory.Category = category;
 
             return View(subCategory);
         }
