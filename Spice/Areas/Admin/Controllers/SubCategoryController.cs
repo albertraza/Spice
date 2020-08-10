@@ -135,5 +135,50 @@ namespace Spice.Areas.Admin.Controllers
                 StatusMessage = StatusMessage
             });
         }
+
+        // GET DETAILS
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var subCategory = await _context.SubCategories.FindAsync(id);
+            if (subCategory == null)
+                return NotFound();
+
+            return View(subCategory);
+        }
+
+        // GET DELETE
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var subCategory = await _context.SubCategories.FindAsync(id);
+            if (subCategory == null)
+                return NotFound();
+            var category = await _context.Categories.FindAsync(subCategory.CategoryId);
+            subCategory.Category = category;
+
+            return View(subCategory);
+
+        }
+
+        //  POST DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var subCategory = await _context.SubCategories.FindAsync(id);
+
+            if (subCategory == null)
+                return NotFound();
+
+            _context.SubCategories.Remove(subCategory);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
