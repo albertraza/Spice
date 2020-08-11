@@ -1,0 +1,59 @@
+﻿@model IEnumerable<MenuItem>
+@{
+    ViewData["Title"] = "Menu Items";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<div class="border p-5 bg-white">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-info">Menu Item List</h2>
+        </div>
+        <div class="col-md-6 text-right">
+            <partial name="_MenuItemAddButton" />
+        </div>
+    </div>
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(m => m.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.SubCategoryId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.CategoryId)
+                </th>
+                <th>
+
+                </th>
+            </tr>
+            @foreach (var menuItem in Model)
+            {
+                <tr>
+                    <td>@menuItem.Name</td>
+                    <td>@menuItem.Price</td>
+                    <td>@menuItem.SubCategory.Name</td>
+                    <td>@menuItem.Category.Name</td>
+                    <td>
+                        <partial name="_MenuItemTableButtons" model="@menuItem.Id" />
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <div class="m-5">
+            <p>No menu items are available.</p>
+        </div>
+    }
+
+</div>
