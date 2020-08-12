@@ -8,7 +8,7 @@
 <h2 class="text-dark">Create Mneu Item</h2>
 <br />
 
-<form method="post" asp-action="Create" asp-controller="Category" asp-area="Admin" enctype="multipart/form-data">
+<form method="post" asp-action="Create" asp-controller="MenuItem" asp-area="Admin" enctype="multipart/form-data">
     <div class="border bg-white p-5">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
         <div class="form-group row">
@@ -59,7 +59,7 @@
                 <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
             </div>
             <div class="col-5">
-                <select id="SubCategoryId" asp-for="@Model.MenuItem.SubCategoryId" asp-items="@(new SelectList(string.Empty,"Id", "Name"))" class="form-control"></select>
+                <select name="SubCategoryId" id="SubCategoryId" asp-for="@Model.MenuItem.SubCategoryId" asp-items="@(new SelectList(string.Empty,"Id", "Name"))" class="form-control"></select>
             </div>
         </div>
         <div class="form-group row">
