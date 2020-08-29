@@ -23,6 +23,9 @@ namespace Spice.Areas.Admin.Controllers
         [BindProperty]
         public MenuItemViewModel MenuItemViewModel { get; set; }
 
+        [BindProperty]
+        public IEnumerable<MenuItem> MenuItems { get; set; }
+
         public MenuItemController(ApplicationDbContext context, IWebHostEnvironment enviroment)
         {
             _context = context;
@@ -32,12 +35,14 @@ namespace Spice.Areas.Admin.Controllers
                 Categories = _context.Categories,
                 MenuItem = new MenuItem()
             };
+            MenuItems = _context.MenuItems;
         }
 
         // GET INDEX
         public async Task<IActionResult> Index()
         {
-            return View(await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).ToListAsync());
+            this.MenuItems = await _context.MenuItems.Include(mi => mi.SubCategory).Include(mi => mi.Category).ToListAsync();
+            return View(MenuItems);
         }
 
         // GET CREATE
@@ -107,10 +112,58 @@ namespace Spice.Areas.Admin.Controllers
         }
 
 
-       // POST EDIT
-       //public async Task<IActionResult> EditPost(int? id)
-       //{
+        // POST EDIT
+        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Edit")]
+        public async Task<IActionResult> EditPost(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-       //}
+            MenuItemViewModel.MenuItem.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
+
+            if (!ModelState.IsValid)
+            {
+                MenuItemViewModel.SubCategories = await _context.SubCategories.Where(sc => sc.CategoryId == MenuItemViewModel.MenuItem.CategoryId).ToListAsync();
+                return View(MenuItemViewModel);
+            }
+
+            // Image saving section
+            var menuItemFromDb = await _context.MenuItems.FindAsync(MenuItemViewModel.MenuItem.Id);
+
+            string webRootPath = _hostingEnviroment.WebRootPath;
+            var files = HttpContext.Request.Form.Files;
+
+            if (files.Count > 0)
+            {
+                var imagePath = Path.Combine(webRootPath, "images");
+                var imageExtention = Path.GetExtension(files[0].FileName);
+
+                // Delete the original File;
+                var currentImagePath = Path.Combine(webRootPath, menuItemFromDb.Image.TrimStart('\\'));
+                if (System.IO.File.Exists(currentImagePath))
+                {
+                    System.IO.File.Delete(currentImagePath);
+                }
+
+                // upload the new file
+                using var fileStream = new FileStream(Path.Combine(imagePath, menuItemFromDb.Id + imageExtention), FileMode.Create);
+                files[0].CopyTo(fileStream);
+                menuItemFromDb.Image = @"\images\" + menuItemFromDb.Id + imageExtention;
+            }
+
+            menuItemFromDb.Name = MenuItemViewModel.MenuItem.Name;
+            menuItemFromDb.Description = MenuItemViewModel.MenuItem.Description;
+            menuItemFromDb.Price = MenuItemViewModel.MenuItem.Price;
+            menuItemFromDb.Spicyness = MenuItemViewModel.MenuItem.Spicyness;
+            menuItemFromDb.CategoryId = MenuItemViewModel.MenuItem.CategoryId;
+            menuItemFromDb.SubCategoryId = MenuItemViewModel.MenuItem.SubCategoryId;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
