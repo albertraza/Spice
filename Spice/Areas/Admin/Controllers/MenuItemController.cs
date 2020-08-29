@@ -34,19 +34,23 @@ namespace Spice.Areas.Admin.Controllers
             };
         }
 
+        // GET INDEX
         public async Task<IActionResult> Index()
         {
             return View(await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).ToListAsync());
         }
 
+        // GET CREATE
         public IActionResult Create()
         {
             return View(MenuItemViewModel);
         }
 
+        // POST CREATE
         [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePost() {
+        public async Task<IActionResult> CreatePost()
+        {
             MenuItemViewModel.MenuItem.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
 
             if (!ModelState.IsValid)
@@ -76,7 +80,7 @@ namespace Spice.Areas.Admin.Controllers
             else
             {
                 var fileExtention = Path.Combine(webRootPath, @"images\" + Util.DefaultImage);
-                System.IO.File.Copy(fileExtention, webRootPath + @"\images\" + menuItemFromDb.Id + ".png");
+                System.IO.File.Copy(fileExtention, webRootPath + @"\images\" + menuItemFromDb.Id + ".png", true);
                 menuItemFromDb.Image = @"\images\" + menuItemFromDb.Id + ".png";
             }
 
@@ -84,5 +88,29 @@ namespace Spice.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET EDIT
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var menuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).SingleOrDefaultAsync(mi => mi.Id == id);
+
+            if (menuItem == null)
+                return NotFound();
+
+            MenuItemViewModel.MenuItem = menuItem;
+            MenuItemViewModel.SubCategories = await _context.SubCategories.Where(sc => sc.CategoryId == menuItem.CategoryId).ToListAsync();
+
+            return View(MenuItemViewModel);
+        }
+
+
+       // POST EDIT
+       //public async Task<IActionResult> EditPost(int? id)
+       //{
+
+       //}
     }
 }
