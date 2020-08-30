@@ -118,9 +118,8 @@ namespace Spice.Areas.Admin.Controllers
         public async Task<IActionResult> EditPost(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
+
 
             MenuItemViewModel.MenuItem.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
 
