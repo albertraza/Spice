@@ -164,5 +164,18 @@ namespace Spice.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> Details(int? Id)
+        {
+            if (Id == null)
+                return NotFound();
+
+            MenuItemViewModel.MenuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).FirstOrDefaultAsync(mi => mi.Id == Id);
+
+            if (MenuItemViewModel.MenuItem == null)
+                return NotFound();
+
+            return View(MenuItemViewModel);
+        }
     }
 }
