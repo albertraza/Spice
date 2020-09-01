@@ -165,17 +165,57 @@ namespace Spice.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Details(int? Id)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
                 return NotFound();
 
-            MenuItemViewModel.MenuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).FirstOrDefaultAsync(mi => mi.Id == Id);
+            MenuItemViewModel.MenuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).FirstOrDefaultAsync(mi => mi.Id == id);
 
             if (MenuItemViewModel.MenuItem == null)
                 return NotFound();
 
             return View(MenuItemViewModel);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            MenuItemViewModel.MenuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).FirstOrDefaultAsync(mi => mi.Id == id);
+
+            if (MenuItemViewModel.MenuItem == null)
+                return NotFound();
+
+            return View(MenuItemViewModel);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeletePost(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            MenuItemViewModel.MenuItem = await _context.MenuItems.Include(mi => mi.Category).Include(mi => mi.SubCategory).FirstOrDefaultAsync(mi => mi.Id == id);
+
+            if (MenuItemViewModel.MenuItem == null)
+                return NotFound();
+
+            if (MenuItemViewModel.MenuItem.Image != null)
+            {
+                var imagePath = Path.Combine(_hostingEnviroment.WebRootPath, MenuItemViewModel.MenuItem.Image.TrimStart('\\'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _context.MenuItems.Remove(MenuItemViewModel.MenuItem);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

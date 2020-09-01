@@ -1,0 +1,81 @@
+@model Spice.Models.ViewModels.MenuItemViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Delete Menuitem";
+}
+<br />
+<h2 class="text-dark">Delete Menuitem</h2>
+<br />
+
+<form method="post" asp-action="Create" asp-controller="MenuItem" asp-area="Admin" enctype="multipart/form-data">
+    <div class="border bg-white p-5 row">
+        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+        <input asp-for="MenuItem.Id" type="hidden" />
+
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="text" readonly asp-for="MenuItem.Name" class="form-control" />
+                </div>
+                <span class="text-danger" asp-validation-for="MenuItem.Name"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    @Html.TextAreaFor(m => m.MenuItem.Description, new { @readonly=true })
+                </div>
+                <span class="text-danger" asp-validation-for="MenuItem.Description"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input readonly asp-for="MenuItem.Price" class="form-control" />
+                </div>
+                <span class="text-danger" asp-validation-for="MenuItem.Price"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input readonly asp-for="MenuItem.Category.Name" class="form-control">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItem.SubCategory.Name" readonly class="form-control">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-8 offset-4">
+                    <partial name="_DeleteAndBackButtons" model="@Model.MenuItem.Id" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 offset-1">
+            <img src="@Model.MenuItem.Image" style="width: 100%; border-radius: 5px; border: 1px solid #bbb9b9;" alt="@(Model.MenuItem.Name + " Image")" />
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+     <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: "lists",
+            menubar: 'file edit format'
+        });
+    </script>
+}
