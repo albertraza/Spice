@@ -1,0 +1,78 @@
+﻿@model Spice.Models.Coupon;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Coupon Details";
+}
+
+
+<br />
+<h2 class="text-dark">Coupon Details</h2>
+<br />
+
+<form method="post" asp-action="Edit" asp-area="Admin" enctype="multipart/form-data">
+    <div class="row border bg-white p-5">
+        <div class="col-md-8">
+            <div class="">
+                <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                <div class="form-group row">
+                    <div class="col-2">
+                        <label asp-for="Name" class="col-form-label"></label>
+                    </div>
+                    <div class="col-5">
+                        <input type="text" asp-for="Name" class="form-control" readonly />
+                    </div>
+
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-2">
+                        <label asp-for="CouponType" class="col-form-label"></label>
+                    </div>
+                    <div class="col-5">
+                        <select type="text" asp-for="CouponType" disabled asp-items="Html.GetEnumSelectList<Coupon.ECouponType>()" class="form-control"></select>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <div class="col-2">
+                        <label asp-for="Discount" class="col-form-label"></label>
+                    </div>
+                    <div class="col-5">
+                        <input asp-for="Discount" readonly class="form-control" />
+                    </div>
+                    <span class="text-danger" asp-validation-for="Discount"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-2">
+                        <label asp-for="MinimumAmout" class="col-form-label"></label>
+                    </div>
+                    <div class="col-5">
+                        <input type="text" asp-for="MinimumAmout" readonly class="form-control" />
+                    </div>
+                    <span class="text-danger" asp-validation-for="MinimumAmout"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-2">
+                        <label asp-for="IsActive" class="col-form-label"></label>
+                    </div>
+                    <div class="col-5">
+                        <input type="checkbox" disabled asp-for="IsActive" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-5 offset-2">
+                        <partial name="_EditLinkAndBackButtons" model="@Model.Id" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            @{
+                var base64 = Convert.ToBase64String(Model.Picture);
+                var imgSrc = string.Format("data:/image/jpg;base64,{0}", base64);
+
+            }
+            <img src="@imgSrc" style="width: 100%; border-radius: 5px; border: 1px solid #bbb9b9;" alt="@(Model.Name + " Image")" />
+        </div>
+    </div>
+</form>
